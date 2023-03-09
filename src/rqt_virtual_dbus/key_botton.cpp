@@ -7,28 +7,24 @@
 KeyboardButton::KeyboardButton(QWidget *parent) : QRadioButton(parent) {
   resize(parent->width(), parent->height());
   this->setText("Use keyboard");
+  read_keyboard_ = this->isChecked();
 
-  focus_timer_ = new QTimer(this);
+  key_timer_ = new QTimer(this);
+
   connect(this, &QRadioButton::clicked, this, &KeyboardButton::updateState);
-  connect(this->focus_timer_, &QTimer::timeout, this,
-          &KeyboardButton::focusButton);
+  //  connect(this->key_timer_, &QTimer::timeout, this,
+  //          &KeyboardButton::readMouseState);
 }
 
 KeyboardButton::~KeyboardButton() {}
 
 void KeyboardButton::updateState() {
   read_keyboard_ = this->isChecked();
-  if (read_keyboard_)
-    focus_timer_->start(20);
-  else
-    focus_timer_->stop();
-}
-
-void KeyboardButton::focusButton() {
-  if (read_keyboard_)
-    this->setFocus();
-  else
-    focus_timer_->stop();
+  if (read_keyboard_) {
+    key_timer_->start(80);
+  } else {
+    key_timer_->stop();
+  }
 }
 
 void KeyboardButton::resizeEvent(QResizeEvent *event) {
@@ -36,7 +32,7 @@ void KeyboardButton::resizeEvent(QResizeEvent *event) {
 }
 
 void KeyboardButton::keyPressEvent(QKeyEvent *ev) {
-  if (!slip_state_)
+  if (!slip_state_ || !read_keyboard_)
     return;
 
   switch (ev->key()) {
@@ -92,7 +88,7 @@ void KeyboardButton::keyPressEvent(QKeyEvent *ev) {
 }
 
 void KeyboardButton::keyReleaseEvent(QKeyEvent *ev) {
-  if (!slip_state_)
+  if (!slip_state_ || !read_keyboard_)
     return;
 
   switch (ev->key()) {
@@ -147,12 +143,53 @@ void KeyboardButton::keyReleaseEvent(QKeyEvent *ev) {
   }
 }
 
-void KeyboardButton::mouseMoveEvent(QMouseEvent *ev) {}
+void KeyboardButton::readMouseState() {
+  int fd, bytes;
+  unsigned char data[3];
+  const char *pDevice = "/dev/input/mice";
+
+  if (!slip_state_ || !read_keyboard_)
+    return;
+
+  // Open Mouse
+  fd = open(pDevice, O_RDWR);
+  if (fd < 0) {
+    printf("ERROR Opening %s, are you run the script {input_authority.bash}?\n",
+           pDevice);
+    return;
+  }
+  int left, middle, right;
+  signed char x, y;
+  if (read_keyboard_) {
+    // Read Mouse
+    bytes = read(fd, data, sizeof(data));
+    if (bytes > 0) {
+      //  单击鼠标生成：
+      //  x=0, y=0, left=1, middle=0, right=0
+      //  x=0, y=0, left=0, middle=0, right=0
+      //  并且一个鼠标移动(注意“相对”鼠标移动坐标)：
+      //  x=1, y=1, left=0, middle=0, right=0
+      left = data[0] & 0x1;
+      right = data[0] & 0x2;
+      middle = data[0] & 0x4;
+      x = data[1];
+      y = data[2];
+
+      dbus_data_->m_x = x / 1600.;
+      dbus_data_->m_y = y / 1600.;
+      /* There is a problem with clicking */
+      // dbus_data_->p_l = left;
+      // dbus_data_->p_r = right;
+    }
+  }
+  ::close(fd);
+}
 
 void KeyboardButton::focusOutEvent(QFocusEvent *event) {
   QRadioButton::focusOutEvent(event);
   if (read_keyboard_) {
     // 保持焦点
+    this->setFocus();
     activateWindow();
   }
 }
