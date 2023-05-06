@@ -31,6 +31,8 @@ protected:
   void keyReleaseEvent(QKeyEvent *ev) override;
   void resizeEvent(QResizeEvent *ev) override;
   void focusOutEvent(QFocusEvent *ev) override;
+  void mousePressEvent(QMouseEvent *ev) override;
+  void mouseReleaseEvent(QMouseEvent *ev) override;
   void mouseMoveEvent(QMouseEvent *ev) override;
 
 private:

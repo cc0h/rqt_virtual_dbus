@@ -147,7 +147,36 @@ void KeyboardButton::keyReleaseEvent(QKeyEvent *ev) {
   }
 }
 
-void KeyboardButton::mouseMoveEvent(QMouseEvent *ev) {}
+void KeyboardButton::mouseMoveEvent(QMouseEvent *ev) {
+  //  QPoint p;
+  //  p = event->globalPos();
+  //  int x = p.x();
+  //  int y = p.y();
+  //  ui->mouseMove_label->setText(QString::number(x) + " " +
+  //  QString::number(y));
+}
+
+void KeyboardButton::mousePressEvent(QMouseEvent *ev) {
+  if (!slip_state_)
+    return;
+
+  if (ev->buttons() == Qt::LeftButton) {
+    dbus_data_->p_l = true;
+  } else if (ev->buttons() == Qt::RightButton) {
+    dbus_data_->p_r = true;
+  }
+}
+
+void KeyboardButton::mouseReleaseEvent(QMouseEvent *ev) {
+  if (!slip_state_)
+    return;
+
+  if (ev->buttons() == Qt::LeftButton) {
+    dbus_data_->p_l = false;
+  } else if (ev->buttons() == Qt::RightButton) {
+    dbus_data_->p_r = false;
+  }
+}
 
 void KeyboardButton::focusOutEvent(QFocusEvent *event) {
   QRadioButton::focusOutEvent(event);
