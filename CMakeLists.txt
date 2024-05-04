@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
         rqt_gui
         rqt_gui_cpp
         std_msgs
+        rm_msgs
         )
 
 ## System dependencies are found with CMake's conventions
@@ -111,7 +112,7 @@ roslint_cpp()
 catkin_package(
         #  INCLUDE_DIRS include
         LIBRARIES ${PROJECT_NAME}
-        CATKIN_DEPENDS roscpp rqt_gui_cpp std_msgs
+        CATKIN_DEPENDS roscpp rqt_gui_cpp std_msgs rm_msgs
         #  DEPENDS system_lib
 )
 
