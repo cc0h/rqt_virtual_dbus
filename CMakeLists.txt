@@ -10,7 +10,8 @@ find_package(catkin REQUIRED COMPONENTS
         rqt_gui
         rqt_gui_cpp
         std_msgs
-        )
+        rm_msgs
+)
 
 ## System dependencies are found with CMake's conventions
 
@@ -111,7 +112,7 @@ roslint_cpp()
 catkin_package(
         #  INCLUDE_DIRS include
         LIBRARIES ${PROJECT_NAME}
-        CATKIN_DEPENDS roscpp rqt_gui_cpp std_msgs
+        CATKIN_DEPENDS roscpp rqt_gui_cpp std_msgs rm_msgs
         #  DEPENDS system_lib
 )
 
@@ -121,15 +122,15 @@ FILE(GLOB ALL_RESOURCE "resource/*.ui")
 
 set(${PROJECT_NAME}_SRCS
         ${ALL_SOURCES}
-        )
+)
 
 set(${PROJECT_NAME}_HDRS
         ${ALL_INCLUDE}
-        )
+)
 
 set(${PROJECT_NAME}_UIS
         ${ALL_RESOURCE}
-        )
+)
 
 if ("${qt_gui_cpp_USE_QT_MAJOR_VERSION} " STREQUAL "5 ")
     qt5_wrap_cpp(${PROJECT_NAME}_MOCS ${${PROJECT_NAME}_HDRS})
@@ -157,7 +158,7 @@ add_library(${PROJECT_NAME}
         ${rqt_virtual_dbus_SRCS}
         ${rqt_virtual_dbus_MOCS}
         ${rqt_virtual_dbus_UIS_H}
-        )
+)
 
 ## Declare a C++ executable
 # add_executable(rqt_example_cpp_node src/rqt_example_cpp_node.cpp)
@@ -169,7 +170,7 @@ add_library(${PROJECT_NAME}
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
         ${catkin_LIBRARIES}
-        )
+)
 
 if ("${qt_gui_cpp_USE_QT_MAJOR_VERSION} " STREQUAL "5 ")
     target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
@@ -196,7 +197,7 @@ install(TARGETS ${PROJECT_NAME}
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-        )
+)
 
 ## Mark cpp header files for installation
 # install(DIRECTORY include/${PROJECT_NAME}/
@@ -209,16 +210,16 @@ install(TARGETS ${PROJECT_NAME}
 install(DIRECTORY
         resource
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-        )
+)
 
 install(PROGRAMS scripts/rqt_virtual_dbus.py
         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-        )
+)
 
 install(FILES
         plugin.xml
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-        )
+)
 
 #############
 ## Testing ##
